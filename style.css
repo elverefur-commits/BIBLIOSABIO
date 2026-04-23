@@ -412,33 +412,51 @@ h2 {
 }
 
 .lifeline-button {
-    width: 70px;
-    height: 50px;
-    border-radius: 25px;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.3);
+    width: 75px;
+    height: 58px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(74, 0, 224, 0.7), rgba(142, 45, 226, 0.7));
+    border: 1px solid rgba(255, 215, 0, 0.5);
     color: white;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 2px;
+    box-shadow: 0 0 12px rgba(142, 45, 226, 0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.lifeline-button .lifeline-label {
+    font-size: 0.55rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    opacity: 0.85;
+    line-height: 1;
 }
 
 .lifeline-button:hover:not(.disabled) {
-    background: rgba(255,255,255,0.2);
+    background: linear-gradient(135deg, rgba(94, 18, 232, 0.9), rgba(157, 64, 231, 0.9));
     border-color: var(--accent-color);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(255,215,0,0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(142, 45, 226, 0.6), 0 0 0 1px var(--accent-color);
+}
+
+.lifeline-button:active:not(.disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(142, 45, 226, 0.5);
 }
 
 .lifeline-button.disabled {
-    opacity: 0.3;
+    opacity: 0.25;
     cursor: not-allowed;
-    background: transparent;
+    background: rgba(255,255,255,0.05);
     border-color: rgba(255,255,255,0.1);
+    box-shadow: none;
 }
 
 #current-score-panel {
@@ -671,7 +689,18 @@ h2 {
     .lifelines-grid {
         width: 100%;
         justify-content: center;
-        gap: 20px;
+        gap: 15px;
+    }
+
+    .lifeline-button {
+        width: 90px;
+        height: 68px;
+        border-radius: 18px;
+        font-size: 1.4rem;
+    }
+
+    .lifeline-button .lifeline-label {
+        font-size: 0.6rem;
     }
 
     #money-tree-container {
