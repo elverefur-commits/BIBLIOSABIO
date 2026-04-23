@@ -210,7 +210,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize Game
     function initGame() {
         if (audioCtx.state === 'suspended') audioCtx.resume();
-        state.questions = [...allQuestions];
+        
+        // Select 5 random questions for each of the 5 difficulty levels
+        let selectedQuestions = [];
+        for (let level = 1; level <= 5; level++) {
+            let levelQuestions = allQuestions.filter(q => q.difficulty === level);
+            levelQuestions = shuffleArray(levelQuestions);
+            
+            // If we don't have enough, take all we have. Ideally we have >5 per level.
+            let needed = 5;
+            selectedQuestions.push(...levelQuestions.slice(0, needed));
+        }
+
+        state.questions = selectedQuestions;
         state.currentIndex = 0;
         state.currentMoney = 0;
         state.safeHavenAmount = 0;
@@ -221,19 +233,23 @@ document.addEventListener('DOMContentLoaded', () => {
         updateLifelinesUI();
         updateStreakUI();
         buildMoneyTree();
-        showScreen('game');
-        loadQuestion();
+        showScreen('game', loadQuestion);
     }
 
-    function showScreen(screenName) {
+    function showScreen(screenName, callback) {
         Object.values(screens).forEach(s => {
             s.classList.remove('active');
-            setTimeout(() => s.style.display = 'none', 500); // Wait for fade out
+            if (s !== screens[screenName]) {
+                setTimeout(() => { s.style.display = 'none'; }, 500);
+            }
         });
-        
+
         setTimeout(() => {
-            screens[screenName].style.display = screenName === 'game' ? 'flex' : 'block';
-            setTimeout(() => screens[screenName].classList.add('active'), 50);
+            screens[screenName].style.display = 'flex';
+            setTimeout(() => {
+                screens[screenName].classList.add('active');
+                if (callback) callback();
+            }, 50);
         }, 500);
     }
 
@@ -243,9 +259,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const li = document.createElement('li');
             const levelNames = ["Debutante", "Intermedio", "Avanzado", "Superior", "Experto"];
             const difficultyName = levelNames[q.difficulty - 1] || "Extra";
-            
+
             li.innerHTML = `<span class="level-num">${idx + 1}</span> <span class="amount">${difficultyName}</span>`;
-            if (q.isSafeHaven) li.classList.add('safe');
+            if (q.isSafeHaven || (idx + 1) % 5 === 0) li.classList.add('safe');
             ui.moneyList.appendChild(li);
         });
     }
@@ -319,10 +335,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.streak++;
                 updateStreakUI();
 
-                // Bonus points for time left
-                state.currentMoney = q.money + (state.timeLeft * 10 * state.streak);
-                
-                if (q.isSafeHaven) state.safeHavenAmount = state.currentMoney;
+                // Acumula: base del nivel + bonus por tiempo y racha
+                state.currentMoney += q.money + (state.timeLeft * 10 * state.streak);
+
+                // Checkpoint: último de cada nivel (índices 4, 9, 14, 19)
+                if (q.isSafeHaven || (state.currentIndex + 1) % 5 === 0) {
+                    state.safeHavenAmount = state.currentMoney;
+                }
                 ui.moneyWon.textContent = formatMoney(state.currentMoney);
 
                 setTimeout(() => {
@@ -456,10 +475,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     `;
                     ui.audiencePoll.insertAdjacentHTML('beforeend', html);
-                    
+                    const container = ui.audiencePoll.lastElementChild;
                     setTimeout(() => {
-                        const bar = ui.audiencePoll.lastElementChild.querySelector('.poll-bar');
-                        bar.style.height = `${percent}%`;
+                        container.querySelector('.poll-bar').style.height = `${percent}%`;
                     }, 50);
                 }
             });
@@ -501,5 +519,5 @@ document.addEventListener('DOMContentLoaded', () => {
     buttons.lifelines.phone.addEventListener('click', () => useLifeline('phone'));
     buttons.lifelines.audience.addEventListener('click', () => useLifeline('audience'));
     
-    buttons.modalClose.addEventListener('click', closeModal);
+    buttons.modalClose.onclick = closeModal;
 });
