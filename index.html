@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Quién Quiere Ser Bibliosabio?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <div id="start-screen" class="screen active">
+        <div class="logo-container">
+            <img src="logo.png" alt="Logo ¿Quién Quiere Ser Bibliosabio?" class="logo-image" id="main-logo">
+        </div>
+        <h1 class="main-title">¿Quién Quiere Ser <span class="highlight">Bibliosabio?</span></h1>
+        <p class="subtitle">Pon a prueba tu conocimiento bíblico</p>
+        <button id="start-button" class="btn-primary">
+            <span>Comenzar Juego</span>
+            <div class="btn-glow"></div>
+        </button>
+    </div>
+
+    <div id="game-screen" class="screen">
+        <div id="game-area">
+            
+            <div id="gamification-header">
+                <div id="streak-container" class="hidden">
+                    <span id="streak-icon">🔥</span> Racha x<span id="streak-count">0</span>
+                </div>
+                <div id="timer-container">
+                    <div id="timer-bar"></div>
+                </div>
+                <div id="time-text">45s</div>
+            </div>
+
+            <div id="question-container" class="glass-panel">
+                <div class="question-number">Pregunta <span id="current-question-num">1</span></div>
+                <p id="question-text"></p>
+            </div>
+            <div id="options-container">
+                <button class="option-button glass-panel" data-index="0">
+                    <span class="option-letter">A</span>
+                    <span class="option-text"></span>
+                </button>
+                <button class="option-button glass-panel" data-index="1">
+                    <span class="option-letter">B</span>
+                    <span class="option-text"></span>
+                </button>
+                <button class="option-button glass-panel" data-index="2">
+                    <span class="option-letter">C</span>
+                    <span class="option-text"></span>
+                </button>
+                <button class="option-button glass-panel" data-index="3">
+                    <span class="option-letter">D</span>
+                    <span class="option-text"></span>
+                </button>
+            </div>
+        </div>
+
+        <div id="sidebar" class="glass-panel">
+            <div id="lifelines-container">
+                <h2>Comodines</h2>
+                <div class="lifelines-grid">
+                    <button id="lifeline-5050" class="lifeline-button" title="50:50">50:50</button>
+                    <button id="lifeline-phone" class="lifeline-button" title="Llamar a un amigo">📞</button>
+                    <button id="lifeline-audience" class="lifeline-button" title="Preguntar al público">👥</button>
+                </div>
+            </div>
+            
+            <div id="current-score-panel">
+                <h3>Acumulado</h3>
+                <div class="score-display">
+                    <span id="money-won">0</span> <span class="currency">Pts</span>
+                </div>
+            </div>
+
+            <div id="money-tree-container">
+                <h2>Niveles</h2>
+                <ul id="money-list">
+                    <!-- Se generará con JS -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-over-screen" class="screen">
+        <div class="glass-panel result-panel">
+            <h2 id="game-over-message"></h2>
+            <p class="final-score-text">Has obtenido:</p>
+            <div class="score-display large">
+                <span id="final-score">0</span> <span class="currency">Pts</span>
+            </div>
+            <button id="play-again-button" class="btn-primary">
+                <span>Jugar de Nuevo</span>
+                <div class="btn-glow"></div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal for lifelines -->
+    <div id="modal" class="modal-overlay">
+        <div class="modal-content glass-panel">
+            <h3 id="modal-title"></h3>
+            <p id="modal-text"></p>
+            <div id="audience-poll" style="display:none;">
+                <!-- Barras de encuesta -->
+            </div>
+            <button id="modal-close-button" class="btn-primary small">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="questions.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
