@@ -15,7 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
             phone: document.getElementById('lifeline-phone'),
             audience: document.getElementById('lifeline-audience')
         },
-        modalClose: document.getElementById('modal-close-button')
+        modalClose: document.getElementById('modal-close-button'),
+        modalCancel: document.getElementById('modal-cancel-button'),
+        walkaway: document.getElementById('walkaway-button')
     };
 
     const ui = {
@@ -34,7 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
         timeText: document.getElementById('time-text'),
         streakContainer: document.getElementById('streak-container'),
         streakCount: document.getElementById('streak-count'),
-        questionContainer: document.getElementById('question-container')
+        questionContainer: document.getElementById('question-container'),
+        walkawayAmount: document.getElementById('walkaway-amount'),
+        scoreHistory: document.getElementById('score-history'),
+        historyList: document.getElementById('history-list')
     };
 
     // Game State
@@ -168,9 +173,9 @@ document.addEventListener('DOMContentLoaded', () => {
         buttons.options.forEach(b => b.disabled = true);
         const q = state.questions[state.currentIndex];
         buttons.options[q.answer].classList.add('correct');
-        
+
         setTimeout(() => {
-            showSourceAndNext(q.source, false);
+            showSourceAndNext(q, false);
         }, 2000);
     }
 
@@ -232,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateLifelinesUI();
         updateStreakUI();
+        if (buttons.walkaway) buttons.walkaway.style.display = 'none';
         buildMoneyTree();
         showScreen('game', loadQuestion);
     }
@@ -280,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadQuestion() {
         if (state.currentIndex >= state.questions.length) {
-            endGame(true);
+            endGame('win');
             return;
         }
 
@@ -335,16 +341,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateStreakUI();
 
                 // Acumula: base del nivel + bonus por tiempo y racha
-                state.currentMoney += q.money + (state.timeLeft * 10 * state.streak);
+                const bonus = state.timeLeft * 10 * state.streak;
+                state.currentMoney += q.money + bonus;
+                if (bonus > 0) showBonusAnimation(`+${formatMoney(bonus)} pts`);
 
                 // Checkpoint: último de cada nivel (índices 4, 9, 14, 19)
                 if (q.isSafeHaven || (state.currentIndex + 1) % 5 === 0) {
                     state.safeHavenAmount = state.currentMoney;
+                    updateWalkawayUI();
                 }
                 ui.moneyWon.textContent = formatMoney(state.currentMoney);
 
                 setTimeout(() => {
-                    showSourceAndNext(q.source);
+                    showSourceAndNext(q, true);
                 }, 1000);
 
             } else {
@@ -358,27 +367,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateStreakUI();
 
                 setTimeout(() => {
-                    showSourceAndNext(q.source, false);
+                    showSourceAndNext(q, false);
                 }, 2000);
             }
         }, 1500); // 1.5s suspense
     }
 
-    function showSourceAndNext(sourceText, isCorrect = true) {
-        showModal(isCorrect ? "¡Respuesta Correcta!" : "Respuesta Incorrecta", sourceText);
-        buttons.modalClose.textContent = isCorrect ? "Siguiente Pregunta" : "Ver Resultados";
-        
+    function showSourceAndNext(q, isCorrect = true) {
+        let title, bodyHTML;
+        if (isCorrect) {
+            title = "¡Respuesta Correcta!";
+            bodyHTML = `<div class="modal-source-ref">📖 ${q.source}</div>`;
+        } else {
+            const letter = String.fromCharCode(65 + q.answer);
+            title = "Respuesta Incorrecta";
+            bodyHTML = `
+                <div class="modal-correct-reveal">
+                    <div class="modal-correct-header">La respuesta correcta era:</div>
+                    <div class="modal-correct-answer-box">
+                        <span class="modal-correct-letter">${letter}</span>
+                        <span class="modal-correct-text">${q.options[q.answer]}</span>
+                    </div>
+                </div>
+                <div class="modal-source-ref">📖 ${q.source}</div>
+            `;
+        }
+        showModal(title, bodyHTML);
+        buttons.modalClose.textContent = isCorrect ? "Siguiente ▶" : "Ver resultados";
+
         buttons.modalClose.onclick = () => {
             closeModal();
-            buttons.modalClose.onclick = closeModal; // reset default
+            buttons.modalClose.onclick = closeModal;
             buttons.modalClose.textContent = "Cerrar";
-            
+
             setTimeout(() => {
                 if (isCorrect) {
                     state.currentIndex++;
                     loadQuestion();
                 } else {
-                    endGame(false);
+                    endGame('loss');
                 }
             }, 300);
         };
@@ -402,31 +429,43 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } 
         else if (type === 'phone') {
-            const isCorrect = Math.random() < 0.90;
+            const accuracyByLevel = [0.95, 0.85, 0.70, 0.55, 0.40];
+            const accuracy = accuracyByLevel[q.difficulty - 1] || 0.70;
+            const isExpertCorrect = Math.random() < accuracy;
             let suggestedIdx = q.answer;
-            if (!isCorrect) {
+            if (!isExpertCorrect) {
                 let available = [0, 1, 2, 3].filter(i => i !== q.answer && !buttons.options[i].classList.contains('hide-option'));
                 suggestedIdx = available[Math.floor(Math.random() * available.length)];
             }
             const letter = String.fromCharCode(65 + suggestedIdx);
-            stopTimer(); // Pause timer while modal is open
-            showModal("📞 Llamada a un Experto", `El experto te dice: "Estoy bastante seguro de que la respuesta es la ${letter}."`);            
+            const phrases = [
+                `Estoy completamente seguro: la respuesta es la <strong>${letter}</strong>.`,
+                `Creo que es la <strong>${letter}</strong>, aunque el tema tiene profundidad.`,
+                `No estoy del todo seguro... me inclinaría por la <strong>${letter}</strong>.`,
+                `Honestamente, es muy difícil. Diría la <strong>${letter}</strong>, pero no confiaría ciegamente en mí.`
+            ];
+            const phraseIdx = Math.min(q.difficulty - 1, 3);
+            stopTimer();
+            showModal("📞 Llamada al Experto", `<p style="font-size:1.1rem; line-height:1.6;">${phrases[phraseIdx]}</p>`);
             buttons.modalClose.onclick = () => {
                 closeModal();
-                startTimer(); // Resume timer
+                startTimer();
                 buttons.modalClose.onclick = closeModal;
-            }
+            };
         }
         else if (type === 'audience') {
             const votes = [0, 0, 0, 0];
             let remaining = 100;
-            
-            const correctVotes = Math.floor(Math.random() * 40) + 40; 
+
+            // Audience accuracy drops as difficulty increases
+            const ranges = [[70, 90], [55, 75], [40, 65], [25, 50], [15, 40]];
+            const [minV, maxV] = ranges[q.difficulty - 1] || [40, 65];
+            const correctVotes = Math.floor(Math.random() * (maxV - minV)) + minV;
             votes[q.answer] = correctVotes;
             remaining -= correctVotes;
 
             let available = [0, 1, 2, 3].filter(i => i !== q.answer && !buttons.options[i].classList.contains('hide-option'));
-            
+
             available.forEach((idx, i) => {
                 if (i === available.length - 1) {
                     votes[idx] = remaining;
@@ -438,12 +477,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             stopTimer();
-            showModal("Comodín del Público", "El público ha votado:", votes);
+            showModal("👥 Comodín del Público", "El público ha votado:", votes);
             buttons.modalClose.onclick = () => {
                 closeModal();
                 startTimer();
                 buttons.modalClose.onclick = closeModal;
-            }
+            };
         }
     }
 
@@ -455,7 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showModal(title, text, pollData = null) {
         ui.modalTitle.textContent = title;
-        ui.modalText.textContent = text;
+        ui.modalText.innerHTML = text;
         
         if (pollData) {
             ui.audiencePoll.style.display = 'flex';
@@ -492,20 +531,77 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => ui.modal.style.display = 'none', 300);
     }
 
-    function endGame(isWin) {
+    function endGame(result) {
         stopTimer();
-        if (isWin) {
+        if (buttons.walkaway) buttons.walkaway.style.display = 'none';
+
+        if (result === 'win') {
             ui.gameOverMsg.textContent = "¡ERES UN BIBLIOSABIO!";
             ui.gameOverMsg.style.color = "#00b09b";
             fireConfetti();
+        } else if (result === 'walkaway') {
+            ui.gameOverMsg.textContent = "¡Retiro inteligente!";
+            ui.gameOverMsg.style.color = "#ffd700";
         } else {
             ui.gameOverMsg.textContent = "¡Juego Terminado!";
             ui.gameOverMsg.style.color = "#cb2d3e";
-            state.currentMoney = state.safeHavenAmount; 
+            state.currentMoney = state.safeHavenAmount;
         }
-        
+
+        saveScore(state.currentMoney);
         ui.finalScore.textContent = formatMoney(state.currentMoney);
+        loadHistory();
         showScreen('gameOver');
+    }
+
+    function updateWalkawayUI() {
+        if (!buttons.walkaway || !ui.walkawayAmount) return;
+        if (state.safeHavenAmount > 0) {
+            buttons.walkaway.style.display = 'flex';
+            ui.walkawayAmount.textContent = formatMoney(state.safeHavenAmount);
+        } else {
+            buttons.walkaway.style.display = 'none';
+        }
+    }
+
+    function showBonusAnimation(text) {
+        const el = document.createElement('div');
+        el.className = 'bonus-float';
+        el.textContent = text;
+        const gameArea = document.getElementById('game-area');
+        if (gameArea) {
+            gameArea.style.position = 'relative';
+            gameArea.appendChild(el);
+            setTimeout(() => el.remove(), 1500);
+        }
+    }
+
+    function saveScore(score) {
+        if (score === 0) return;
+        const history = JSON.parse(localStorage.getItem('bibliosabio_scores') || '[]');
+        history.unshift({
+            score,
+            date: new Date().toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
+        });
+        history.splice(5);
+        localStorage.setItem('bibliosabio_scores', JSON.stringify(history));
+    }
+
+    function loadHistory() {
+        const history = JSON.parse(localStorage.getItem('bibliosabio_scores') || '[]');
+        if (!ui.scoreHistory || !ui.historyList) return;
+        if (history.length === 0) {
+            ui.scoreHistory.style.display = 'none';
+            return;
+        }
+        ui.scoreHistory.style.display = 'block';
+        ui.historyList.innerHTML = history.map((entry, i) =>
+            `<li class="${i === 0 ? 'latest' : ''}">
+                <span class="hist-rank">#${i + 1}</span>
+                <span class="hist-score">${formatMoney(entry.score)} Pts</span>
+                <span class="hist-date">${entry.date}</span>
+            </li>`
+        ).join('');
     }
 
     // Event Listeners
@@ -518,6 +614,57 @@ document.addEventListener('DOMContentLoaded', () => {
     buttons.lifelines.audience.addEventListener('click', () => useLifeline('audience'));
     
     buttons.modalClose.onclick = closeModal;
+
+    // Walk Away confirmation
+    if (buttons.walkaway) {
+        buttons.walkaway.addEventListener('click', () => {
+            if (state.isAnswering) return;
+            stopTimer();
+            const safe = formatMoney(state.safeHavenAmount);
+            showModal(
+                "¿Seguro que quieres retirarte?",
+                `<p style="font-size:1.1rem; line-height:1.8;">
+                    Conservarás<br>
+                    <strong style="color:#ffd700; font-size:2rem;">${safe} Pts</strong><br>
+                    garantizados.
+                 </p>`
+            );
+            buttons.modalClose.textContent = "Sí, me retiro";
+            if (buttons.modalCancel) {
+                buttons.modalCancel.style.display = 'inline-block';
+                buttons.modalCancel.textContent = "Seguir jugando";
+                buttons.modalCancel.onclick = () => {
+                    buttons.modalCancel.style.display = 'none';
+                    closeModal();
+                    buttons.modalClose.textContent = "Cerrar";
+                    buttons.modalClose.onclick = closeModal;
+                    startTimer();
+                };
+            }
+            buttons.modalClose.onclick = () => {
+                if (buttons.modalCancel) buttons.modalCancel.style.display = 'none';
+                closeModal();
+                buttons.modalClose.textContent = "Cerrar";
+                buttons.modalClose.onclick = closeModal;
+                setTimeout(() => {
+                    state.currentMoney = state.safeHavenAmount;
+                    endGame('walkaway');
+                }, 300);
+            };
+        });
+    }
+
+    // Keyboard shortcuts: A/B/C/D to select option, Enter to close modal
+    document.addEventListener('keydown', (e) => {
+        const keyMap = { 'a': 0, 'b': 1, 'c': 2, 'd': 3 };
+        const idx = keyMap[e.key.toLowerCase()];
+        if (idx !== undefined && !state.isAnswering && screens.game.classList.contains('active')) {
+            buttons.options[idx].click();
+        }
+        if (e.key === 'Enter' && document.getElementById('modal').style.display === 'flex') {
+            buttons.modalClose.click();
+        }
+    });
 });
 
 if ('serviceWorker' in navigator) {

@@ -897,3 +897,244 @@ h2 {
         font-size: 1rem;
     }
 }
+
+/* --- Walk Away Button --- */
+.btn-walkaway {
+    width: 100%;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, rgba(203,45,62,0.25), rgba(239,71,58,0.25));
+    border: 1px solid rgba(203,45,62,0.5);
+    border-radius: 12px;
+    color: white;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    transition: all 0.3s;
+}
+
+.btn-walkaway:hover {
+    background: linear-gradient(135deg, rgba(203,45,62,0.5), rgba(239,71,58,0.5));
+    border-color: rgba(203,45,62,0.9);
+}
+
+.walkaway-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #ff6b6b;
+}
+
+.walkaway-safe {
+    font-size: 0.75rem;
+    color: #ccc;
+}
+
+/* --- Modal Improvements --- */
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-secondary {
+    background: transparent;
+    color: #ccc;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 10px 25px;
+    font-size: 1rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+/* Correct answer reveal in modal */
+.modal-correct-reveal {
+    background: rgba(0, 176, 155, 0.15);
+    border: 1px solid rgba(0, 176, 155, 0.5);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    animation: fadeIn 0.4s ease;
+}
+
+.modal-correct-header {
+    font-size: 0.85rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.modal-correct-answer-box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.modal-correct-letter {
+    background: #00b09b;
+    color: white;
+    font-weight: 900;
+    font-size: 1.4rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.modal-correct-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #e0ffe8;
+    text-align: left;
+    line-height: 1.4;
+}
+
+.modal-source-ref {
+    font-size: 1rem;
+    color: var(--accent-color);
+    background: rgba(255,215,0,0.08);
+    border-left: 3px solid var(--accent-color);
+    padding: 10px 14px;
+    border-radius: 0 8px 8px 0;
+    text-align: left;
+    margin-top: 4px;
+}
+
+/* Bonus point animation */
+.bonus-float {
+    position: absolute;
+    color: #ffd700;
+    font-size: 1.4rem;
+    font-weight: 900;
+    pointer-events: none;
+    animation: bonusFloat 1.4s ease-out forwards;
+    top: 40%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-shadow: 0 0 10px rgba(255,215,0,0.8);
+    z-index: 100;
+    white-space: nowrap;
+}
+
+@keyframes bonusFloat {
+    0%   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-70px); }
+}
+
+/* --- Score History --- */
+#score-history {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    width: 100%;
+}
+
+.history-title {
+    font-size: 0.9rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+#history-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+#history-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    font-size: 0.95rem;
+}
+
+#history-list li.latest {
+    background: rgba(255,215,0,0.08);
+    border: 1px solid rgba(255,215,0,0.2);
+}
+
+.hist-rank {
+    color: #888;
+    font-size: 0.8rem;
+    width: 24px;
+    flex-shrink: 0;
+}
+
+#history-list li.latest .hist-rank {
+    color: var(--accent-color);
+    font-weight: 700;
+}
+
+.hist-score {
+    flex: 1;
+    font-weight: 700;
+    color: white;
+}
+
+#history-list li.latest .hist-score {
+    color: var(--accent-color);
+}
+
+.hist-date {
+    color: #777;
+    font-size: 0.8rem;
+}
+
+/* Tablet breakpoint */
+@media (min-width: 769px) and (max-width: 1024px) {
+    #game-screen {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    #sidebar {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    #money-tree-container {
+        display: none;
+    }
+
+    #lifelines-container {
+        flex: 1;
+        min-width: 260px;
+    }
+
+    #current-score-panel {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    #walkaway-button {
+        flex: 1;
+        min-width: 130px;
+    }
+}

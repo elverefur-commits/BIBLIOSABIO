@@ -5,7 +5,7 @@ var raw = [
 ["¿Qué profeta del Antiguo Testamento predijo que el Mesías nacería en Belén?","Isaías","Jeremías","Miqueas","Amós",2,"Miqueas 5,1"],
 ["¿Cuántas parábolas contiene el capítulo 15 del Evangelio de Lucas?","1","2","3","4",2,"La oveja perdida, la moneda perdida y el hijo pródigo"],
 ["¿Qué libro bíblico narra el retorno del exilio a Jerusalén con Zorobabel?","Nehemías","Esdras","Crónicas","Macabeos",1,"Esdras 1-6"],
-["¿Cuántos soldados rodeaban a Eliseo en Dotan cuando su criado se asustó?","Miles de ángeles que Dios mostró","Solo 2 ángeles","10 querubines","Un ejército de 300",0,"2 Reyes 6,17 — 'Los montes estaban llenos de caballos y carros de fuego'"],
+["¿Qué vio el siervo de Eliseo cuando el Señor le abrió los ojos en Dotán?","Dos ángeles guardando la entrada","Los montes llenos de caballos y carros de fuego","Un solo ángel con espada desenvainada","El ejército arameo huyendo",1,"2 Reyes 6,17 — Dios abrió los ojos del criado y vio la montaña llena de caballos y carros de fuego"],
 ["¿En qué parábola un padre divide su herencia antes de morir?","La del hijo pródigo","La de los talentos","La de los viñadores homicidas","La de los obreros de la viña",0,"Lucas 15,12"],
 ["¿Qué significa el nombre 'Israel' dado a Jacob?","El que lucha con Dios","El amado de Dios","El elegido de Dios","El siervo de Dios",0,"Génesis 32,29 — 'el que luchó con Dios'"],
 ["¿En qué río luchó Jacob con el ángel de Dios?","El Jordán","El Nilo","El Jaboc","El Éufrates",2,"Génesis 32,23"],

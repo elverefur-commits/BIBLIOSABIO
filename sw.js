@@ -1,4 +1,4 @@
-const CACHE = 'bibliosabio-v1';
+const CACHE = 'bibliosabio-v3';
 const FILES = [
     './',
     './index.html',
