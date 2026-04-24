@@ -249,6 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 screens[screenName].classList.add('active');
                 if (callback) callback();
+                if (window._refreshInstallButtons) window._refreshInstallButtons();
             }, 50);
         }, 500);
     }
@@ -538,10 +539,10 @@ if ('serviceWorker' in navigator) {
     }
 
     function showInstallButtons() {
-        if (!isStandalone()) {
-            if (installBtn) installBtn.style.display = 'flex';
-            if (installFloat) installFloat.style.display = 'flex';
-        }
+        if (isStandalone()) return;
+        const onStart = document.getElementById('start-screen').classList.contains('active');
+        if (installBtn) installBtn.style.display = onStart ? 'flex' : 'none';
+        if (installFloat) installFloat.style.display = onStart ? 'none' : 'flex';
     }
 
     function hideInstallButtons() {
@@ -601,6 +602,9 @@ if ('serviceWorker' in navigator) {
         hideInstallButtons();
         deferredPrompt = null;
     });
+
+    // Expose for screen transitions
+    window._refreshInstallButtons = showInstallButtons;
 
     // If already standalone, never show
     if (isStandalone()) {
