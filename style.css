@@ -24,6 +24,11 @@ html, body {
     overflow-x: hidden;
 }
 
+html {
+    background: radial-gradient(circle at center, var(--primary-color) 0%, var(--secondary-color) 100%);
+    background-color: var(--secondary-color);
+}
+
 body {
     font-family: 'Outfit', sans-serif;
     background: radial-gradient(circle at center, var(--primary-color) 0%, var(--secondary-color) 100%);
@@ -664,6 +669,14 @@ h2 {
 
 /* Responsive */
 @media (max-width: 900px) {
+    body {
+        background-attachment: scroll;
+    }
+
+    body::before {
+        position: absolute;
+    }
+
     .screen {
         padding: 12px;
     }
