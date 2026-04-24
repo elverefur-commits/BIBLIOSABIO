@@ -279,13 +279,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadQuestion() {
         if (state.currentIndex >= state.questions.length) {
-            fireConfetti();
-            playSound('levelUp');
             endGame(true);
             return;
         }
 
-        // Check if level up
+        // Check if level up (start of a new difficulty block)
         if (state.currentIndex > 0 && state.currentIndex % 5 === 0) {
             fireConfetti();
             playSound('levelUp');
@@ -367,8 +365,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showSourceAndNext(sourceText, isCorrect = true) {
         showModal(isCorrect ? "¡Respuesta Correcta!" : "Respuesta Incorrecta", sourceText);
-        
-        ui.audiencePoll.style.display = 'none';
         buttons.modalClose.textContent = isCorrect ? "Siguiente Pregunta" : "Ver Resultados";
         
         buttons.modalClose.onclick = () => {
@@ -526,3 +522,88 @@ document.addEventListener('DOMContentLoaded', () => {
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js');
 }
+
+// --- PWA INSTALL SYSTEM ---
+(function() {
+    let deferredPrompt = null;
+    const installBtn = document.getElementById('install-button');
+    const installFloat = document.getElementById('install-float');
+    const installModal = document.getElementById('install-modal');
+    const installModalClose = document.getElementById('install-modal-close');
+
+    // Check if already installed as PWA
+    function isStandalone() {
+        return window.matchMedia('(display-mode: standalone)').matches
+            || window.navigator.standalone === true;
+    }
+
+    function showInstallButtons() {
+        if (!isStandalone()) {
+            if (installBtn) installBtn.style.display = 'flex';
+            if (installFloat) installFloat.style.display = 'flex';
+        }
+    }
+
+    function hideInstallButtons() {
+        if (installBtn) installBtn.style.display = 'none';
+        if (installFloat) installFloat.style.display = 'none';
+    }
+
+    // Capture the beforeinstallprompt event
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        showInstallButtons();
+    });
+
+    // If no beforeinstallprompt fires (iOS, Firefox, etc.), show buttons with fallback
+    setTimeout(() => {
+        if (!deferredPrompt && !isStandalone()) {
+            showInstallButtons();
+        }
+    }, 3000);
+
+    async function triggerInstall() {
+        if (deferredPrompt) {
+            // Native install prompt available
+            deferredPrompt.prompt();
+            const result = await deferredPrompt.userChoice;
+            if (result.outcome === 'accepted') {
+                hideInstallButtons();
+            }
+            deferredPrompt = null;
+        } else {
+            // Show manual instructions modal
+            if (installModal) {
+                installModal.style.display = 'flex';
+                setTimeout(() => installModal.classList.add('show'), 10);
+            }
+        }
+    }
+
+    if (installBtn) {
+        installBtn.addEventListener('click', triggerInstall);
+    }
+    if (installFloat) {
+        installFloat.addEventListener('click', triggerInstall);
+    }
+
+    // Close install instructions modal
+    if (installModalClose) {
+        installModalClose.addEventListener('click', () => {
+            installModal.classList.remove('show');
+            setTimeout(() => installModal.style.display = 'none', 300);
+        });
+    }
+
+    // Hide buttons if app is installed
+    window.addEventListener('appinstalled', () => {
+        hideInstallButtons();
+        deferredPrompt = null;
+    });
+
+    // If already standalone, never show
+    if (isStandalone()) {
+        hideInstallButtons();
+    }
+})();

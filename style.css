@@ -157,11 +157,13 @@ body::before {
     border: 1px solid rgba(255,255,255,0.2);
 }
 
-.btn-primary:hover {
-    background: var(--button-hover);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(142, 45, 226, 0.5);
-    border-color: var(--accent-color);
+@media (hover: hover) {
+    .btn-primary:hover {
+        background: var(--button-hover);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(142, 45, 226, 0.5);
+        border-color: var(--accent-color);
+    }
 }
 
 .btn-primary .btn-glow {
@@ -802,8 +804,96 @@ h2 {
     }
 }
 
+/* Install Button on Start Screen */
+.btn-install {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 14px 32px;
+    font-size: 1.1rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 176, 155, 0.4);
+    animation: installPulse 2.5s ease-in-out infinite;
+}
+
+@media (hover: hover) {
+    .btn-install:hover {
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 8px 25px rgba(0, 176, 155, 0.6);
+        border-color: #ffd700;
+    }
+}
+
+.btn-install:active {
+    transform: translateY(-1px) scale(0.98);
+}
+
+@keyframes installPulse {
+    0%, 100% { box-shadow: 0 4px 15px rgba(0, 176, 155, 0.4); }
+    50% { box-shadow: 0 4px 25px rgba(0, 176, 155, 0.7), 0 0 40px rgba(0, 176, 155, 0.2); }
+}
+
+/* Floating Install Button */
+.install-float-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+    cursor: pointer;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 176, 155, 0.5);
+    transition: all 0.3s ease;
+    animation: floatBounce 3s ease-in-out infinite;
+}
+
+@media (hover: hover) {
+    .install-float-btn:hover {
+        transform: scale(1.15);
+        box-shadow: 0 6px 30px rgba(0, 176, 155, 0.7);
+        border-color: #ffd700;
+    }
+}
+
+.install-float-btn:active {
+    transform: scale(0.95);
+}
+
+@keyframes floatBounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-6px) scale(1); }
+}
+
 @media (max-width: 600px) {
     #options-container {
         grid-template-columns: 1fr;
+    }
+
+    .install-float-btn {
+        bottom: 16px;
+        right: 16px;
+        width: 50px;
+        height: 50px;
+    }
+
+    .btn-install {
+        padding: 12px 24px;
+        font-size: 1rem;
     }
 }
