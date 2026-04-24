@@ -612,7 +612,7 @@ h2 {
 #audience-poll {
     display: flex;
     justify-content: space-around;
-    align-items: flex-end;
+    align-items: stretch;
     height: 200px;
     margin-bottom: 30px;
     padding: 20px 0;
@@ -635,15 +635,18 @@ h2 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 40px;
+    justify-content: flex-end;
+    width: 50px;
+    height: 100%;
+    position: relative;
 }
 
 .poll-bar {
     width: 100%;
+    min-height: 4px;
     background: var(--button-bg);
     border-radius: 5px 5px 0 0;
     transition: height 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
 }
 
 .poll-label {
@@ -653,20 +656,23 @@ h2 {
 }
 
 .poll-percent {
-    position: absolute;
-    top: -25px;
-    left: 50%;
-    transform: translateX(-50%);
     font-size: 0.9rem;
     font-weight: bold;
+    color: var(--accent-color);
+    margin-bottom: 5px;
 }
 
 /* Responsive */
 @media (max-width: 900px) {
-    #game-screen {
-        flex-direction: column-reverse; /* Puts sidebar above question area on mobile */
+    .screen {
+        padding: 12px;
     }
-    
+
+    #game-screen {
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+
     #game-screen.active {
         display: flex !important;
     }
@@ -676,35 +682,56 @@ h2 {
         min-height: 100vh;
         align-items: flex-start;
     }
-    
+
+    #game-area {
+        justify-content: flex-start;
+        gap: 10px;
+    }
+
     #sidebar {
         width: 100%;
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 15px;
-        padding: 10px;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
     }
-    
+
+    #lifelines-container {
+        width: 100%;
+    }
+
+    #lifelines-container h2 {
+        margin-bottom: 8px;
+    }
+
     .lifelines-grid {
         width: 100%;
         justify-content: center;
-        gap: 15px;
+        gap: 10px;
     }
 
     .lifeline-button {
-        width: 90px;
-        height: 68px;
-        border-radius: 18px;
-        font-size: 1.4rem;
+        flex: 1;
+        min-width: 0;
+        height: 65px;
+        border-radius: 16px;
+        font-size: 1.3rem;
     }
 
     .lifeline-button .lifeline-label {
-        font-size: 0.6rem;
+        font-size: 0.58rem;
     }
 
     #money-tree-container {
         display: none;
+    }
+
+    #current-score-panel {
+        flex: 1;
+        padding: 8px 12px;
+        min-width: 120px;
     }
 
     .main-title {
@@ -716,15 +743,19 @@ h2 {
     }
 
     .option-button {
-        padding: 12px 15px;
+        padding: 11px 14px;
         font-size: 1rem;
         border-radius: 25px;
     }
 
+    #options-container {
+        gap: 10px;
+    }
+
     #question-container {
-        padding: 25px 15px;
-        border-radius: 30px;
-        min-height: 120px;
+        padding: 22px 14px;
+        border-radius: 28px;
+        min-height: 100px;
     }
 
     .subtitle {
