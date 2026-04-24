@@ -1,0 +1,26 @@
+{
+    "name": "¿Quién Quiere Ser Bibliosabio?",
+    "short_name": "Bibliosabio",
+    "description": "Pon a prueba tu conocimiento bíblico",
+    "start_url": "./",
+    "scope": "./",
+    "display": "standalone",
+    "background_color": "#0d0529",
+    "theme_color": "#1e0a5a",
+    "orientation": "portrait-primary",
+    "lang": "es",
+    "icons": [
+        {
+            "src": "logo.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        }
+    ]
+}

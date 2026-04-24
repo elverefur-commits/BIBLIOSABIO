@@ -405,7 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } 
         else if (type === 'phone') {
-            const isCorrect = Math.random() < 0.75;
+            const isCorrect = Math.random() < 0.90;
             let suggestedIdx = q.answer;
             if (!isCorrect) {
                 let available = [0, 1, 2, 3].filter(i => i !== q.answer && !buttons.options[i].classList.contains('hide-option'));
@@ -413,7 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const letter = String.fromCharCode(65 + suggestedIdx);
             stopTimer(); // Pause timer while modal is open
-            showModal("Llamada a un Amigo", `Tu amigo te dice: "Estoy bastante seguro de que la respuesta es la ${letter}."`);
+            showModal("📞 Llamada a un Experto", `El experto te dice: "Estoy bastante seguro de que la respuesta es la ${letter}."`);            
             buttons.modalClose.onclick = () => {
                 closeModal();
                 startTimer(); // Resume timer
@@ -467,18 +467,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const labels = ['A', 'B', 'C', 'D'];
             pollData.forEach((percent, idx) => {
                 if (!buttons.options[idx].classList.contains('hide-option')) {
+                    const barHeight = Math.round(percent * 1.5); // max 150px for 100%
                     const html = `
                         <div class="poll-bar-container">
                             <div class="poll-percent">${percent}%</div>
-                            <div class="poll-bar" style="height: 0%"></div>
+                            <div class="poll-bar" style="height: 0px"></div>
                             <div class="poll-label">${labels[idx]}</div>
                         </div>
                     `;
                     ui.audiencePoll.insertAdjacentHTML('beforeend', html);
                     const container = ui.audiencePoll.lastElementChild;
                     setTimeout(() => {
-                        container.querySelector('.poll-bar').style.height = `${percent}%`;
-                    }, 50);
+                        container.querySelector('.poll-bar').style.height = `${barHeight}px`;
+                    }, 100);
                 }
             });
         } else {
@@ -521,3 +522,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     buttons.modalClose.onclick = closeModal;
 });
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+}
